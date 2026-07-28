@@ -1,0 +1,26 @@
+name: '🧪 Test'
+
+on:
+  pull_request:
+  push:
+
+permissions: {}
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: 'ubuntu-24.04'
+    steps:
+      - name: Install generic kernel headers with ALSA support
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y linux-headers-generic
+
+      - name: 'Checkout'
+        uses: 'actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0' # v7.0.0
+
+      - name: 'Build'
+        run: |
+          KDIR=$(ls -d /usr/src/linux-headers-*-generic | sort -V | tail -n1)
+          echo "Building against $KDIR"
+          make -C "$KDIR" M="$PWD" modules
